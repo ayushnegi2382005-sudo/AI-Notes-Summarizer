@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AI Notes Summarizer</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🎙 AI Notes Summarizer</h1>
+
+    <p class="subtitle">
+        Upload an audio file and get AI-generated notes instantly.
+    </p>
+
+    <form action="/upload"
+          method="POST"
+          enctype="multipart/form-data"
+          onsubmit="showLoading()">
+
+        <input type="file"
+               name="audio"
+               accept=".mp3,.wav,.m4a"
+               required>
+
+        <button type="submit">
+            Generate Notes
+        </button>
+    </form>
+
+    <div id="loading" class="loading">
+        Processing Audio...
+    </div>
+
+    {% if transcript %}
+
+    <div class="box">
+        <h2>Transcript</h2>
+
+        <pre>{{ transcript }}</pre>
+    </div>
+
+    {% endif %}
+
+    {% if summary %}
+
+    <div class="box">
+        <h2>Summary Notes</h2>
+
+        <pre>{{ summary }}</pre>
+    </div>
+
+    {% endif %}
+
+</div>
+
+<script>
+function showLoading() {
+    document.getElementById("loading").style.display = "block";
+}
+</script>
+
+</body>
+</html>
