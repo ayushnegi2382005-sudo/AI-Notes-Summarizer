@@ -35,6 +35,7 @@ def upload():
     file.save(filepath)
 
     try:
+
         with open(filepath, "rb") as audio_file:
 
             transcription = client.audio.transcriptions.create(
@@ -45,29 +46,56 @@ def upload():
         transcript = transcription.text
 
         summary_response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[
-                {
-                    "role": "system",
-                    "content": """
-Convert the transcript into structured notes.
+    model="llama-3.3-70b-versatile",
+    messages=[
+        {
+            "role": "system",
+            "content": """
+You are an expert note-taking assistant.
 
-Format:
-1. Main Topic
-2. Key Points
-3. Important Details
-4. Action Items (if any)
+Your job is to transform transcripts into clean,
+professional, well-structured notes.
 
-Use bullet points and keep it concise.
+Instructions:
+
+- Identify the main topic automatically.
+- Remove filler words, repetitions, and unnecessary speech.
+- Preserve important facts, concepts, explanations, and examples.
+- Use concise and readable language.
+- Organize the output into sections.
+- Use bullet points wherever appropriate.
+- If no information exists for a section, omit it.
+
+Output Format:
+
+# Title
+
+## Key Concepts
+- Important concepts discussed
+
+## Important Details
+- Important facts, explanations, or insights
+
+## Examples / Explanations
+- Examples mentioned in the transcript
+
+## Key Takeaways
+- Main conclusions and learning points
+
+## Action Items
+- Tasks or follow-up actions (only if present)
+
+The final output should look like professional study notes or meeting notes.
 """
-                },
-                {
-                    "role": "user",
-                    "content": transcript
-                }
-            ]
-        )
-
+        },
+        {
+            "role": "user",
+            "content": transcript
+        }
+    ],
+    temperature=0.3,
+    max_tokens=1200
+)
         summary = summary_response.choices[0].message.content
 
     except Exception as e:
