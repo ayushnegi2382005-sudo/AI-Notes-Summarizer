@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Notes Summarizer</title>
 
     <link rel="stylesheet"
@@ -12,47 +14,92 @@
 
 <div class="container">
 
-    <h1>🎙 AI Notes Summarizer</h1>
+    <div class="header">
 
-    <p class="subtitle">
-        Upload an audio file and get AI-generated notes instantly.
-    </p>
+        <h1>🎙 AI Notes Summarizer</h1>
 
-    <form action="/upload"
-          method="POST"
-          enctype="multipart/form-data"
-          onsubmit="showLoading()">
+        <p>
+            Upload an audio recording and generate structured AI notes instantly.
+        </p>
 
-        <input type="file"
-               name="audio"
-               accept=".mp3,.wav,.m4a"
-               required>
+    </div>
 
-        <button type="submit">
-            Generate Notes
-        </button>
-    </form>
+    <div class="upload-card">
 
-    <div id="loading" class="loading">
-        Processing Audio...
+        <form action="/upload"
+              method="POST"
+              enctype="multipart/form-data"
+              onsubmit="showLoading()">
+
+            <div class="drop-zone" id="drop-zone">
+
+                <p class="drop-title">
+                    Drag & Drop Audio File Here
+                </p>
+
+                <p>or</p>
+
+                <input
+                    type="file"
+                    id="audio"
+                    name="audio"
+                    accept=".mp3,.wav,.m4a"
+                    required>
+
+            </div>
+
+            <button type="submit">
+                Generate Notes
+            </button>
+
+        </form>
+
+        <div id="loading">
+            Processing audio... Please wait.
+        </div>
+
     </div>
 
     {% if transcript %}
 
-    <div class="box">
-        <h2>Transcript</h2>
+    <div class="card">
 
-        <pre>{{ transcript }}</pre>
+        <div class="card-header">
+
+            <h2>📄 Transcript</h2>
+
+            <button onclick="copyText('transcript-content')">
+                Copy
+            </button>
+
+        </div>
+
+        <div id="transcript-content" class="content">
+            {{ transcript }}
+        </div>
+
     </div>
 
     {% endif %}
 
     {% if summary %}
 
-    <div class="box">
-        <h2>Summary Notes</h2>
+    <div class="card">
 
-        <pre>{{ summary }}</pre>
+        <div class="card-header">
+
+            <h2>📝 Summary Notes</h2>
+
+            <button onclick="copyText('summary-content')">
+                Copy
+            </button>
+
+        </div>
+
+        <div id="summary-content" class="content">
+            {{ summary }}
+        </div>
+
     </div>
 
     {% endif %}
@@ -60,9 +107,43 @@
 </div>
 
 <script>
+
 function showLoading() {
     document.getElementById("loading").style.display = "block";
 }
+
+function copyText(id) {
+
+    let text = document.getElementById(id).innerText;
+
+    navigator.clipboard.writeText(text);
+
+    alert("Copied Successfully");
+}
+
+const dropZone = document.getElementById("drop-zone");
+const fileInput = document.getElementById("audio");
+
+dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.classList.add("dragover");
+});
+
+dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("dragover");
+});
+
+dropZone.addEventListener("drop", (e) => {
+
+    e.preventDefault();
+
+    dropZone.classList.remove("dragover");
+
+    if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+    }
+});
+
 </script>
 
 </body>
